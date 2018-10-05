@@ -1,12 +1,10 @@
 package entithax.detail;
 
-
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 import haxe.macro.Tools;
 import haxe.macro.ExprTools;
-
 
 import entithax.Component;
 
@@ -29,9 +27,6 @@ class Macro {
 		return fields;
 	}
 //#end
-
-
-
 
     public static macro function getComponentId(object:ExprOf<Component>): Expr {
         var name = switch (Context.typeof(object)) {

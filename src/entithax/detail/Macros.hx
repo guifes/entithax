@@ -4,7 +4,9 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 using haxe.macro.TypeTools;
+
 using thx.macro.MacroFields;
+
 import Type in RType;
 
 class Macros {
