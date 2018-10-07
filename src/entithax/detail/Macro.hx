@@ -36,7 +36,6 @@ class Macro {
 				throw "object type not found";
 			}
         }
-		trace(name);
         return macro $i{name}.id_;
     }
 
