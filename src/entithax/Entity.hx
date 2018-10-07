@@ -154,6 +154,12 @@ class Entity
 		return macro $self.addComponent($componentId, $object);
     }
 
+	macro public function remove<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
+    {
+		var componentId = macro $componentClass.id_;
+		return macro cast $self.replaceComponent($componentClass.id_, null);
+    }
+
     macro public function get<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
     {
 		var componentId = macro $componentClass.id_;
