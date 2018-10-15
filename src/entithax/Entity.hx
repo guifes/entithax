@@ -24,7 +24,7 @@ typedef EntityComponentReplaced = Entity -> Int -> Component -> Component -> Voi
 
 typedef Components = Vector<Component>;
 
-typedef Entities =  HashSet<Entity>;
+typedef Entities = HashSet<Entity>;
 
 class Entity
 {
@@ -47,7 +47,7 @@ class Entity
 	public function new() {}
 
 	// This is required for hash map
-    public function hashCode():Int
+    public function hashCode(): Int
     {
         return creationIndex_;
     }
@@ -109,6 +109,7 @@ class Entity
 	{
 		// TODO assert component exists
 		var previousComponent = getComponent(index);
+
 		if (previousComponent == component) {
 			// just call back
 			onComponentReplaced(this, index, previousComponent, component);
@@ -116,6 +117,7 @@ class Entity
 		else {
 			// add previous component to component ComponentPool
 			components[index] = component;
+
 			if (component != null) {
 				onComponentReplaced(this, index, previousComponent, component);
 			}

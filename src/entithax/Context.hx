@@ -99,14 +99,14 @@ class Context
 		}
 	}
 
-	public function createCollector(matcher:Matcher, event:GroupEvent):Collector
+	public function createCollector(matcher: Matcher, event: GroupEvent): Collector
 	{
 		var g = getGroup(matcher);
 		return new Collector(g, event);
 	}
 
 	// Returns a group for the specified matcher.
-	public function getGroup(matcher:Matcher):Group
+	public function getGroup(matcher: Matcher): Group
 	{
 		var group = groups_.get(matcher);
 
@@ -141,18 +141,21 @@ class Context
 		return entitiesCache_;
 	}
 
-	public function updateGroupsComponentAddedOrRemoved(entity:Entity, index:Int, component:Component)
+	public function updateGroupsComponentAddedOrRemoved(entity: Entity, index: Int, component: Component)
 	{
 		var groups = groupsForIndex_[index];
 		var callbacks = new List<Tuple2<Group, DelegateGroupChanged>>();
 
-		for (g in groups) {
+		for (g in groups)
+		{
 			var cb = g.handleEntity(entity);
+			
 			if (cb != null)
 				callbacks.add(new Tuple2(g, cb));
 		}
 
-		for (cbt in callbacks) {
+		for (cbt in callbacks)
+		{
 			cbt._1.invoke(cbt._0, entity, index, component);
 		}
 	}
@@ -161,7 +164,9 @@ class Context
 	{
 		// trace("NotImplemented");
 		var groups = groupsForIndex_[index];
-		for (g in groups) {
+
+		for (g in groups)
+		{
 			g.updateEntity(entity, index, previousComponent, newComponent);
 		}
 	}

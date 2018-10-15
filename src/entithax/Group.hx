@@ -42,11 +42,10 @@ class Group
 
 	public function handleEntitySilently(entity: Entity)
 	{
-		if (matcher_.matches(entity)) {
+		if (matcher_.matches(entity))
 			addEntitySilently(entity);
-		} else {
+		else
 			removeEntitySilently(entity);
-		}
 	}
 
 	public function handleEntity(entity: Entity)
@@ -127,9 +126,11 @@ class Group
 	// This handles entity replace/update 
 	public function updateEntity(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
 	{
-		if (entities_.exists(entity)) {
+		if (entities_.exists(entity))
+		{
 			if (onEntityRemoved != null)
 				onEntityRemoved.invoke(this, entity, index, previousComponent);
+
 			if (onEntityAdded != null)
 				onEntityAdded.invoke(this, entity, index, newComponent);
 			// TODO call onEntityUpdated
