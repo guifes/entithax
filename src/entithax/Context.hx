@@ -3,6 +3,7 @@ package entithax;
 import entithax.Component;
 import entithax.Entity;
 import entithax.Group;
+import entithax.Systems;
 import entithax.*;
 
 import haxe.ds.GenericStack;
@@ -28,8 +29,9 @@ class Context
 	private var dbgUsePool = true;
 	private var groups_ = new HashMap<Matcher, Group>();
 	private var groupsForIndex_ = new Array<List<Group>>();
+	private var sharedSystems_ = new Map<String, ISystem>(); // Replace by macro ClassName > Index implementation
 
-	public function new(totalComponents:Int, startCreationIndex:Int)
+	public function new(totalComponents: Int, startCreationIndex: Int)
 	{
 		totalComponents_ = totalComponents;
 		creationIndex_ = startCreationIndex;
@@ -59,15 +61,7 @@ class Context
 		// invalidate entitiesCache_
 		entitiesCache_ = null;
 
-		// TODO reuse
-
-		// var entity = new Entity();
-		// entity.initialize(creationIndex_++, totalComponents_, componentPools_);
-		// entity.onComponentAdded = updateGroupsComponentAddedOrRemoved;
-		// entity.onComponentRemoved = updateGroupsComponentAddedOrRemoved;
-		// entity.onComponentReplaced = updateGroupsComponentReplaced;
-		// TODO onEntityReleased implement
-		var entity:Entity;
+		var entity: Entity;
 
 		if (dbgUsePool) {
 			entity = entitiesPool_.get();
@@ -82,7 +76,7 @@ class Context
 		return entity;
 	}
 
-	public function destroyEntity(entity:Entity)
+	public function destroyEntity(entity: Entity)
 	{
 		var removed = entities_.remove(entity);
 
@@ -132,7 +126,7 @@ class Context
 		return group;
 	}
 
-	public function getEntities():Array<Entity>
+	public function getEntities(): Array<Entity>
 	{
 		if (entitiesCache_ == null) {
 			entitiesCache_ = entities_.toArray();
@@ -160,7 +154,7 @@ class Context
 		}
 	}
 
-	public function updateGroupsComponentReplaced(entity:Entity, index:Int, previousComponent:Component, newComponent:Component)
+	public function updateGroupsComponentReplaced(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
 	{
 		// trace("NotImplemented");
 		var groups = groupsForIndex_[index];
@@ -169,5 +163,15 @@ class Context
 		{
 			g.updateEntity(entity, index, previousComponent, newComponent);
 		}
+	}
+
+	public function addSharedSystem(key: String, system: ISystem)
+	{
+		sharedSystems_.set(key, system);
+	}
+
+	public function getSharedSystem(key: String): ISystem
+	{
+		return sharedSystems_.get(key);
 	}
 }
