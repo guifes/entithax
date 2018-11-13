@@ -9,25 +9,30 @@ import entithax.Component;
 class Collector
 {
 	public var collectedEntities(default, null) = Entities.create();
+
 	private var group_ : Group;
 	private var groupEvent_: GroupEvent;
+	private var active_: Bool;
 	
 	public function new(group: Group, groupEvent: GroupEvent)
 	{
 		group_ = group;
 		groupEvent_ = groupEvent;
-		activate();
+		active_ = true;
+
+		initialize();
 	}
 
 	// Add entity to collector
 	public function collectEntity(group: Group, entity: Entity, index: Int, component: Component)
 	{
-		collectedEntities.add(entity);
+		if(active_)
+			collectedEntities.add(entity);
 	}
 
-    /// Activates the Collector and will start collecting
+    /// Initializes the Collector and will start collecting
     /// changed entities. Collectors are activated by default.
-	public function activate()
+	public function initialize()
 	{
 		switch (groupEvent_)
 		{
@@ -41,9 +46,14 @@ class Collector
 		}
 	}
 
+	public function activate()
+	{
+		active_ = true;
+	}
+
 	public function deactivate()
 	{
-		//  TODO implement
+		active_ = false;
 	}
 
 	public function clearCollected()
