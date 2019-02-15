@@ -49,6 +49,11 @@ class Systems implements IInitializeSystem implements IExecuteSystem
 		}
 	}
 
+	public function getSystems(): List<IExecuteSystem>
+	{
+		return executeSystems;
+	}
+
 	public function add(system: ISystem)
 	{
 		if (Std.is(system, IExecuteSystem))

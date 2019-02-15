@@ -13,6 +13,10 @@ import de.polygonal.ds.tools.ObjectPool;
 
 import thx.Tuple;
 
+#if macro
+import haxe.macro.Expr;
+#end
+
 // typedef ComponentPool = GenericStack<Component>;
 typedef ComponentPool = ObjectPool<Component>;
 
@@ -20,13 +24,15 @@ typedef ComponentPools = Array<ComponentPool>;
 
 class Context
 {
+	public var globalEntity(default, null): Entity;
+
 	private var creationIndex_: Int = 0;
 	private var totalComponents_: Int;
 	private var componentPools_ = new ComponentPools();
 	private var entities_ = Entities.create();
 	private var entitiesCache_: Array<Entity>;
 	private var entitiesPool_: ObjectPool<Entity>;
-	private var dbgUsePool = true;
+	private var dbgUsePool_ = true;
 	private var groups_ = new HashMap<Matcher, Group>();
 	private var groupsForIndex_ = new Array<List<Group>>();
 	private var sharedSystems_ = new Map<String, ISystem>(); // Replace by macro ClassName > Index implementation
@@ -41,6 +47,8 @@ class Context
 		}
 
 		entitiesPool_ = new ObjectPool(createEntityNew);
+
+		globalEntity = createEntity("Global");
 	}
 
 	public function createEntityNew(): Entity
@@ -56,18 +64,20 @@ class Context
 		return entity;
 	}
 
-	public function createEntity(): Entity
+	public function createEntity(name: String): Entity
 	{
 		// invalidate entitiesCache_
 		entitiesCache_ = null;
 
 		var entity: Entity;
 
-		if (dbgUsePool) {
+		if (dbgUsePool_) {
 			entity = entitiesPool_.get();
 		} else {
 			entity = createEntityNew();
 		}
+
+		entity.name = name;
 
 		entity.reactivate(creationIndex_++);
 
@@ -88,7 +98,7 @@ class Context
 
 		entity.destroy();
 
-		if (dbgUsePool) {
+		if (dbgUsePool_) {
 			entitiesPool_.put(entity);
 		}
 	}
@@ -164,6 +174,18 @@ class Context
 			g.updateEntity(entity, index, previousComponent, newComponent);
 		}
 	}
+
+	public macro function add(self:Expr, object:ExprOf<Component>): Expr
+	{
+		var componentId = macro entithax.detail.Macro.getComponentId($object);
+		return macro $self.globalEntity.addComponent($componentId, $object);
+    }
+
+	macro public function get<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
+    {
+		var componentId = macro $componentClass.id_;
+		return macro cast $self.globalEntity.getComponent($componentClass.id_);
+    }
 
 	public function addSharedSystem(key: String, system: ISystem)
 	{

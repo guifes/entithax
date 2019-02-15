@@ -28,6 +28,8 @@ typedef Entities = HashSet<Entity>;
 
 class Entity
 {
+	public var name: String;
+	
     // The context manages the state of an entity.
     // Active entities are enabled, destroyed entities are not.
 	public var enabled(default, null): Bool;

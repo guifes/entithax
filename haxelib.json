@@ -6,7 +6,7 @@
 	"description": "Powerful, fast and simple entity component system.",
 	"version": "0.8.0",
 	"releasenote": "Initial release, everything is sort of working.",
-	"contributors": ["montonero"],
+	"contributors": ["montonero", "MouseCaneta"],
 	"classPath": "src",
 	"dependencies": {
 		"polygonal-ds" : "",
