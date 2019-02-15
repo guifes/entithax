@@ -1,13 +1,13 @@
 {
 	"name": "entithax",
-	"url" : "https://github.com/montonero/entithax/",
+	"url" : "https://github.com/guifes/entithax/",
 	"license": "BSD",
 	"tags": ["cross", "game", "utility", "ecs"],
 	"description": "Powerful, fast and simple entity component system.",
-	"version": "0.8.0",
-	"releasenote": "Initial release, everything is sort of working.",
+	"version": "0.9.0",
+	"releasenote": "Improving on montonero's entithax.",
 	"contributors": ["montonero", "MouseCaneta"],
-	"classPath": "src",
+	"classPath": "source",
 	"dependencies": {
 		"polygonal-ds" : "",
 		"hxmath": "",
