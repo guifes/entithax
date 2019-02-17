@@ -3,11 +3,9 @@ package entithax;
 import entithax.Context;
 import entithax.Entity;
 import entithax.Collector;
+import haxe.ds.Vector;
 
-interface ISystem
-{
-
-}
+interface ISystem {}
 
 /// Implement this interface if you want to create a system which should be
 /// initialized once in the beginning.
@@ -23,47 +21,74 @@ interface IExecuteSystem extends ISystem
 	public function execute(elapsed:Float): Void;
 }
 
+typedef ExecuteSystemInfo = { system: IExecuteSystem, enabled: Bool };
+
 class Systems implements IInitializeSystem implements IExecuteSystem
 {
-	private var initializeSystems = new List<IInitializeSystem>();
-	private var executeSystems = new List<IExecuteSystem>();
+	private var initializeSystems: Vector<IInitializeSystem>;
+	private var initializeSystemsCount: Int;
+	private var executeSystemsCount: Int;
+	private var executeSystems: Vector<IExecuteSystem>;
+	private var executeSystemsInfo: Vector<ExecuteSystemInfo>;
+	private var size: Int;
 
-	public function new()
+	public function new(size: Int)
 	{
+		this.size = size;
 
+		initializeSystemsCount = 0;
+		executeSystemsCount = 0;
+
+		initializeSystems = new Vector<IInitializeSystem>(size);
+		executeSystems = new Vector<IExecuteSystem>(size);
+		executeSystemsInfo = new Vector<ExecuteSystemInfo>(size);
 	}
 
-	public function execute(elapsed:Float)
+	public function execute(elapsed: Float)
 	{
-		for (s in executeSystems)
+		for (i in 0...executeSystemsCount)
 		{
-			s.execute(elapsed);
+			var s = executeSystemsInfo[i];
+
+			if(s.enabled)
+			{
+				s.system.execute(elapsed);
+			}
 		}
 	}
 
 	public function initialize() 
 	{
-		for (s in initializeSystems)
+		for (i in 0...initializeSystemsCount)
 		{
+			var s = initializeSystems[i];
 			s.initialize();
 		}
 	}
 
-	public function getSystems(): List<IExecuteSystem>
+	public function getExecuteSystems(): Array<IExecuteSystem>
 	{
-		return executeSystems;
+		return executeSystems.toArray().slice(0, executeSystemsCount);
+	}
+
+	public function setExecuteSystemEnabled(index: Int, enable: Bool)
+	{
+		executeSystemsInfo[index].enabled = enable;
 	}
 
 	public function add(system: ISystem)
 	{
 		if (Std.is(system, IExecuteSystem))
 		{
-			executeSystems.add(cast system);
+			var bla: IExecuteSystem = cast system;
+
+			executeSystems[executeSystemsCount] = bla;
+			executeSystemsInfo[executeSystemsCount++] = { system: bla, enabled: true };
 		}
 			
 		if (Std.is(system, IInitializeSystem))
 		{
-			initializeSystems.add(cast system);
+			initializeSystems[initializeSystemsCount++] = cast system;
 		}
 
 		return this;

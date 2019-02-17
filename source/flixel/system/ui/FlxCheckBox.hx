@@ -12,14 +12,18 @@ private class GraphicCheckBoxUncheckedButton extends BitmapData {}
 
 class FlxCheckBox extends FlxSystemButton
 {
-    public function new()
+    public function new(onClick: Bool->Void)
     {
-        super(new GraphicCheckBoxUncheckedButton(0, 0), onClick);
+        super(new GraphicCheckBoxCheckedButton(0, 0), function() {
+            onClick(this.toggled);
+        }, true);
         this.alpha = Window.HEADER_ALPHA;
+        this.toggled = true;
     }
 
-    private function onClick()
-    {
-        trace("PQP!");
-    }
+    override function set_toggled(Value: Bool): Bool
+	{
+        this.changeIcon(Value ? new GraphicCheckBoxCheckedButton(0, 0) : new GraphicCheckBoxUncheckedButton(0, 0));
+		return toggled = Value;
+	}
 }
