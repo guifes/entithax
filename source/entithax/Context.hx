@@ -179,13 +179,19 @@ class Context
 	{
 		var componentId = macro entithax.detail.Macro.getComponentId($object);
 		return macro $self.globalEntity.addComponent($componentId, $object);
-    }
+	}
 
 	macro public function get<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
-    {
+	{
 		var componentId = macro $componentClass.id_;
 		return macro cast $self.globalEntity.getComponent($componentClass.id_);
-    }
+	}
+
+	macro public function remove<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
+	{
+		var componentId = macro $componentClass.id_;
+		return macro cast $self.globalEntity.replaceComponent($componentClass.id_, null);
+	}
 
 	public function addSharedSystem(key: String, system: ISystem)
 	{
