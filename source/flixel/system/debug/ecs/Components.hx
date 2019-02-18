@@ -4,57 +4,70 @@ import flash.display.Sprite;
 import flash.geom.Rectangle;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
+import openfl.events.MouseEvent;
+import flixel.FlxG;
 import flixel.system.FlxAssets;
 import flixel.system.debug.Window;
+import flixel.system.debug.DebuggerUtil;
+import flixel.system.ui.FlxCheckBox.GraphicCheckBoxCheckedButton;
 import entithax.Entity;
-
-using flixel.system.debug.DebuggerUtil;
+import entithax.Component;
 
 class Components extends Window
 {
-	private static inline var LINE_HEIGHT:Int = 15;
-	private static inline var GUTTER = 15;
+	private static inline var LINE_HEIGHT: Int = 21;
 
-	var container: Sprite;
-	var rowCount: Int;
+	var componentsList: List<ComponentRow>;
 
-    public function new(name: String, entity: Entity)
+    public function new(entity: Entity)
 	{
-		super(name, null, 200, 300, true, new Rectangle(0, 0, 200, 300), true);
+		componentsList = new List<ComponentRow>();
 
-		this.rowCount = 0;
+		var components: Array<Component> = entity.getAllComponents();
+
+		super(entity.name, new GraphicCheckBoxCheckedButton(0, 0), 200, Window.HEADER_HEIGHT + (components.length * LINE_HEIGHT), true);
+
 		this.visible = true;
 
-		container = new Sprite();
-		container.x = 0;
-		container.y = GUTTER;
+		componentsList.x = 0;
+		componentsList.y = Window.HEADER_HEIGHT;
 
-		addChild(container);
+		addChild(componentsList);
 
-		for(c in entity.getAllComponents())
+		for(c in components)
 		{
+			var index: Int = componentsList.rows.length;
+
 			var completeComponentName: String = Type.getClassName(Type.getClass(c));
 			var composedComponentName: Array<String> = completeComponentName.split(".");
 			var componentName: String = composedComponentName[composedComponentName.length - 1];
 			
-			addRow(componentName);
+			addRow(index, new ComponentRow(componentName, _width, LINE_HEIGHT));
 		}
 	}
 
-	private function addRow(text: String): Void
+	function addRow(index: Int, row: ComponentRow): Void
 	{
-		var textField = DebuggerUtil.createTextField();
+		componentsList.addRow(row);
 
-		textField.selectable = false;
-		textField.defaultTextFormat = new TextFormat(FlxAssets.FONT_DEBUGGER, 12, 0xFFFFFF);
-		textField.autoSize = TextFieldAutoSize.NONE;
-		textField.height = LINE_HEIGHT;
-		textField.text = text;
-		textField.width = textField.textWidth;
-		textField.y = LINE_HEIGHT * rowCount;
+		row.y = LINE_HEIGHT * index;
 
-		container.addChild(textField);
+		minSize.x = Math.max(minSize.x, row.width);
+		minSize.y = Math.max(minSize.y, componentsList.y + componentsList.height);
+	}
 
-		rowCount++;
+	/**
+	 * Adjusts the width and height of the text field accordingly.
+	 */
+	override function updateSize(): Void
+	{
+		super.updateSize();
+
+		for(row in componentsList.rows)
+		{
+			var margin = ((LINE_HEIGHT - row.textField.height) * 0.5);
+
+			row.textField.width = _width - margin;
+		}
 	}
 }

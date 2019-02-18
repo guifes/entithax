@@ -5,10 +5,10 @@ import flixel.system.ui.FlxSystemButton;
 import flixel.system.debug.Window;
 
 @:bitmap("assets/images/debugger/buttons/checkboxChecked.png")
-private class GraphicCheckBoxCheckedButton extends BitmapData {}
+@:noCompletion class GraphicCheckBoxCheckedButton extends BitmapData {}
 
 @:bitmap("assets/images/debugger/buttons/checkboxUnchecked.png")
-private class GraphicCheckBoxUncheckedButton extends BitmapData {}
+@:noCompletion class GraphicCheckBoxUncheckedButton extends BitmapData {}
 
 class FlxCheckBox extends FlxSystemButton
 {
