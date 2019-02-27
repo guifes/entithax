@@ -4,6 +4,7 @@ import entithax.Component;
 import entithax.Entity;
 import entithax.Group;
 import entithax.Systems;
+import entithax.detail.Macro;
 import entithax.*;
 
 import haxe.ds.GenericStack;
@@ -37,12 +38,11 @@ class Context
 	private var groupsForIndex_ = new Array<List<Group>>();
 	private var sharedSystems_ = new Map<String, ISystem>(); // Replace by macro ClassName > Index implementation
 
-	public function new(totalComponents: Int, startCreationIndex: Int)
+	public function new()
 	{
-		totalComponents_ = totalComponents;
-		creationIndex_ = startCreationIndex;
+		totalComponents_ = Macro.getComponentCount();
 
-		for (i in 0...totalComponents) {
+		for (i in 0...totalComponents_) {
 			groupsForIndex_[i] = new List<Group>();
 		}
 

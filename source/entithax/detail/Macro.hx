@@ -55,5 +55,10 @@ class Macro
 		return name;
 	}
 
+	public static macro function getComponentCount()
+	{
+		return macro $v{nextId_};
+	}
+
 	private static var nextId_ = 0;
 }
