@@ -59,22 +59,25 @@ class Entity
 		return '$creationIndex_';
 	}
 
-	public function initialize(creationIndex: Int, totalComponents: Int, componentPools: ComponentPools) : Void
+	public function initialize(creationIndex: Int, totalComponents: Int, componentPools: ComponentPools): Void
 	{
 		enabled = true;
 		creationIndex_ = creationIndex;
 		totalComponents_ = totalComponents;
 		componentPools_ = componentPools;
 		components = new Components(totalComponents);
+
 		// FIXME not sure we need this
-		for (i in 0...components.length) {
+		for (i in 0...components.length)
+		{
 			components[i] = null;
 		}
 	}
 	
 	inline private function enabledThrow()
 	{
-		if (!enabled) {
+		if (!enabled)
+		{
 			throw("Entity is disabled!");
 		}
 	}
@@ -96,34 +99,39 @@ class Entity
 		//trace('Adding component: ${index}');
 		#end
 		components[index] = component;
-		if (onComponentAdded != null) {
+		if (onComponentAdded != null)
+		{
 			onComponentAdded(this, index, component);
 		}
 		#if debug
-		else {
+		else
+		{
 			trace('voila!');
 		}
 		#end
 	}
-
 
 	inline private function replaceImpl(index: Int, component: Component)
 	{
 		// TODO assert component exists
 		var previousComponent = getComponent(index);
 
-		if (previousComponent == component) {
+		if (previousComponent == component)
+		{
 			// just call back
 			onComponentReplaced(this, index, previousComponent, component);
 		}
-		else {
+		else
+		{
 			// add previous component to component ComponentPool
 			components[index] = component;
 
-			if (component != null) {
+			if (component != null)
+			{
 				onComponentReplaced(this, index, previousComponent, component);
 			}
-			else {
+			else
+			{
 				// REMOVE
 				//_componentIndicesCache
 				if (onComponentRemoved != null)
@@ -136,9 +144,12 @@ class Entity
 	{
 		enabledThrow();
 
-		if (hasComponent(index)) {
+		if (hasComponent(index))
+		{
 			replaceImpl(index, component);
-		} else {
+		}
+		else
+		{
 			addComponent(index, component);
 		}
 

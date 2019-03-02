@@ -175,7 +175,7 @@ class Context
 		}
 	}
 
-	public macro function add(self:Expr, object:ExprOf<Component>): Expr
+	macro public function add(self:Expr, object:ExprOf<Component>): Expr
 	{
 		var componentId = macro entithax.detail.Macro.getComponentId($object);
 		return macro $self.globalEntity.addComponent($componentId, $object);
@@ -191,6 +191,12 @@ class Context
 	{
 		var componentId = macro $componentClass.id_;
 		return macro cast $self.globalEntity.replaceComponent($componentClass.id_, null);
+	}
+
+	macro public function replace(self: Expr, object: ExprOf<Component>): Expr
+	{
+		var componentId = macro entithax.detail.Macro.getComponentId($object);
+		return macro $self.globalEntity.replaceComponent($componentId, $object);
 	}
 
 	public function addSharedSystem(key: String, system: ISystem)
