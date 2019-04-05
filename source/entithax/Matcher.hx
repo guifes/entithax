@@ -105,9 +105,9 @@ class Matcher
 	}
 
 	public function hashCode():Int
-    {
+	{
 		return hashCode_;
-    }
+	}
 
 	public function allIndices()
 	{
