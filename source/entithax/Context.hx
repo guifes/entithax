@@ -11,6 +11,7 @@ import haxe.ds.GenericStack;
 import haxe.ds.HashMap;
 
 import de.polygonal.ds.tools.ObjectPool;
+import de.polygonal.ds.HashTable;
 
 import thx.Tuple;
 
@@ -34,13 +35,24 @@ class Context
 	private var entitiesCache_: Array<Entity>;
 	private var entitiesPool_: ObjectPool<Entity>;
 	private var dbgUsePool_ = true;
-	private var groups_ = new HashMap<Matcher, Group>();
+	private var groups_: HashTable<Matcher, Group>;
 	private var groupsForIndex_ = new Array<List<Group>>();
 	private var sharedSystems_ = new Map<String, ISystem>(); // Replace by macro ClassName > Index implementation
+	private var debug_: Bool = false;
 
-	public function new()
+	public function new(debug: Bool = false)
 	{
+		this.debug_ = debug;
+
 		totalComponents_ = Macro.getComponentCount();
+
+		var hashCapacity: Int = nextPowerOf2(totalComponents_ * 2);
+
+		if(this.debug_) trace("Group hash capacity " + hashCapacity);
+
+		groups_ = new HashTable<Matcher, Group>(hashCapacity);
+
+		if(this.debug_) trace("Allocating " + totalComponents_ + " positions to hold components in each entity");
 
 		for (i in 0...totalComponents_) {
 			groupsForIndex_[i] = new List<Group>();
@@ -49,6 +61,19 @@ class Context
 		entitiesPool_ = new ObjectPool(createEntityNew);
 
 		globalEntity = createEntity("Global");
+	}
+
+	private static function nextPowerOf2(number: Int): Int
+	{
+		var count = 0;
+        
+        while(number > 0)
+        {
+            number >>= 1;
+            count++;
+        }
+        
+        return cast(Math.pow(2, count), Int);
 	}
 
 	public function createEntityNew(): Entity
@@ -112,9 +137,31 @@ class Context
 	// Returns a group for the specified matcher.
 	public function getGroup(matcher: Matcher): Group
 	{
-		var group = groups_.get(matcher);
+		var groups: Array<Group> = [];
+		var count = groups_.getAll(matcher, groups);
+		var group: Group = null;
 
-		if (group == null) {
+		if (count > 0)
+		{
+			if(count == 1)
+			{
+				group = groups[0];
+			}
+			else
+			{
+				for(g in groups)
+				{
+					if(g.matcher.equals(matcher))
+					{
+						group = g;
+						break;
+					}
+				}
+			}
+		}
+
+		if(group == null)
+		{
 			group = new Group(matcher);
 			// 'Handle' all entities that are already in a context
 			// Thus if the group is created later it will still be able to 'handle'

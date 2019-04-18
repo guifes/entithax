@@ -3,6 +3,8 @@ package entithax;
 import entithax.Component;
 import entithax.Entity;
 
+import de.polygonal.ds.Hashable;
+
 using thx.Arrays;
 
 #if macro
@@ -12,105 +14,178 @@ import haxe.macro.Type;
 using haxe.macro.ExprTools;
 #end
 
-class Matcher
-{	
-	private var indicesAllOf_ = new ComponentIdArray();
-	private var indicesAnyOf_ = new ComponentIdArray();
-	private var indicesNoneOf_ =  new ComponentIdArray();
-	private var hashCode_ : Int;
+class Matcher implements Hashable
+{
+	public var key(default, null): Int;
 
-	public function new() {}
+	public var indicesAllOf(default, null): ComponentIdArray ;
+	public var indicesAnyOf(default, null): ComponentIdArray;
+	public var indicesNoneOf(default, null): ComponentIdArray;
 
-	public static function
-	hashCodeStr(s: String)
+	public function new() 
 	{
-		var hash = 5381, len = s.length;
-		for( i in 0...len) hash = ((hash<<5)+hash)+s.charCodeAt(i);
-		return hash;
-	}
-
-	public static function
-	hashCodeArray(arr: ComponentIdArray)
-	{
-		var hash = 5381, len = arr.length;
-		for( i in 0...len) hash = ((hash<<5)+hash)+ arr[i];
-		return hash;
-	}
-
-	public static function applyHash(hash: Int, indices: ComponentIdArray, i1: Int, i2: Int)
-	{
-		if (indices != null && indices.length > 0) {
-			for (i in indices) {
-				hash ^= i * i1;
-			}
-			hash ^= indices.length * i2;
-		}
-
-		return hash;
+		indicesAllOf = new ComponentIdArray();
+		indicesAnyOf = new ComponentIdArray();
+		indicesNoneOf = new ComponentIdArray();
 	}
 
 	// Create matcher that matches all indices in a list
 	inline public static function allOfIndices(indices: ComponentIdArray)
 	{
 		var matcher = new Matcher();
+		matcher.indicesAllOf = indices;
+		matcher.calculateHash();
 
-		matcher.indicesAllOf_ = indices;
+		return matcher;
+	}
+
+	inline public static function noneOfIndices(indices: ComponentIdArray)
+	{
+		var matcher = new Matcher();
+		matcher.indicesNoneOf = indices;
+		matcher.calculateHash();
+
+		return matcher;
+	}
+
+	inline public static function anyOfIndices(indices: ComponentIdArray)
+	{
+		var matcher = new Matcher();
+		matcher.indicesAnyOf = indices;
 		matcher.calculateHash();
 
 		return matcher;
 	}
 
 	// Convert array of classes to corresponding indices
-	public static macro function classesToIndices(indexClasses:Array<ExprOf<Class<Component>>>)
+	public static macro function classesToIndices(indexClasses: Array<ExprOf<Class<Component>>>)
 	{
 		var ixs = [for (indexClass in indexClasses) {macro $indexClass.id_ ;}];
 		return macro $a{ixs};
 	}
 
-	public static macro function allOf(indexClasses:Array<ExprOf<Class<Component>>>)
+	public static macro function allOf(indexClasses: Array<ExprOf<Class<Component>>>)
 	{
 		indexClasses = indexClasses.distinct(function(e1, e2) {
         	return e1.toString() == e2.toString();
     	});
 
 		var indices = macro Matcher.classesToIndices($a{indexClasses});
-		//var indices2 = macro ($a{indices}.distinct());
+		
 		return macro Matcher.allOfIndices($indices);
 	}
 
-	// Create matcher that matches none of indices in a list
-	public static function noneOf(indices: ComponentIdArray)
+	// public macro function setAllOf(indexClasses: Array<ExprOf<Class<Component>>>)
+	// {
+	// 	indexClasses = indexClasses.distinct(function(e1, e2) {
+    //     	return e1.toString() == e2.toString();
+    // 	});
+
+	// 	var indices = macro Matcher.classesToIndices($a{indexClasses});
+		
+	// 	this.indicesAllOf = $indices;
+	// 	this.calculateHash();
+	// }
+
+	public static macro function noneOf(indexClasses: Array<ExprOf<Class<Component>>>)
 	{
-		var matcher = new Matcher();
-		matcher.indicesNoneOf_ = indices;
-		matcher.calculateHash();
-		return matcher;
+		indexClasses = indexClasses.distinct(function(e1, e2) {
+        	return e1.toString() == e2.toString();
+    	});
+
+		var indices = macro Matcher.classesToIndices($a{indexClasses});
+		
+		return macro Matcher.noneOfIndices($indices);
 	}
+
+	// public macro function setNoneOf(indexClasses: Array<ExprOf<Class<Component>>>)
+	// {
+	// 	indexClasses = indexClasses.distinct(function(e1, e2) {
+    //     	return e1.toString() == e2.toString();
+    // 	});
+
+	// 	var indices = macro Matcher.classesToIndices($a{indexClasses});
+		
+	// 	this.indicesAllOf = $indices;
+	// 	this.calculateHash();
+	// }
+
+	public static macro function anyOf(indexClasses: Array<ExprOf<Class<Component>>>)
+	{
+		indexClasses = indexClasses.distinct(function(e1, e2) {
+        	return e1.toString() == e2.toString();
+    	});
+
+		var indices = macro Matcher.classesToIndices($a{indexClasses});
+		
+		return macro Matcher.anyOfIndices($indices);
+	}
+
+	// public macro function setAnyOf(indexClasses: Array<ExprOf<Class<Component>>>)
+	// {
+	// 	indexClasses = indexClasses.distinct(function(e1, e2) {
+    //     	return e1.toString() == e2.toString();
+    // 	});
+
+	// 	var indices = macro Matcher.classesToIndices($a{indexClasses});
+		
+	// 	this.indicesAnyOf = $indices;
+	// 	this.calculateHash();
+	// }
 
 	private function calculateHash()
 	{
-		var hash = 5381;
-		hash = applyHash(hash, indicesAllOf_, 3, 53);
-		hash = applyHash(hash, indicesAnyOf_, 307, 367);
-		hash = applyHash(hash, indicesNoneOf_, 647, 683);
-		hashCode_ = hash;
+		var hashAllOf = 0;
+		var hashAnyOf = 0;
+		var hashNoneOf = 0;
+		var indexOffset = 500;
+
+		if(indicesAllOf.length > 0)
+		{
+			for(i in 0...indicesAllOf.length)
+				hashAllOf += indicesAllOf[i] + (i * indexOffset);
+		}
+		
+		if(indicesAnyOf.length > 0)
+		{
+			hashAnyOf = 10000;
+
+			for(i in 0...indicesAnyOf.length)
+				hashAnyOf += indicesAnyOf[i] + (i * indexOffset);
+		}
+
+		if(indicesNoneOf.length > 0)
+		{
+			hashNoneOf = 20000;
+
+			for(i in 0...indicesNoneOf.length)
+				hashNoneOf += indicesNoneOf[i] + (i * indexOffset);
+		}
+		key = hashAllOf + hashAnyOf + hashNoneOf;
+
+		trace("Hash code " + key + " generated for indices: " + indicesAllOf + ', ' + indicesAnyOf + ", " + indicesNoneOf);
 	}
 
 	public function matches(entity: Entity): Bool
 	{
-		var matchesAllOf = indicesAllOf_ == null || indicesAllOf_.length == 0 || entity.hasComponents(indicesAllOf_);
-		var matchesAnyOf = indicesAnyOf_ == null ||  indicesAnyOf_.length == 0 || entity.hasAnyComponent(indicesAnyOf_);
-		var matchesNoneOf = indicesNoneOf_ == null || indicesNoneOf_.length == 0 ||  !entity.hasAnyComponent(indicesNoneOf_);
+		var matchesAllOf = indicesAllOf == null || indicesAllOf.length == 0 || entity.hasComponents(indicesAllOf);
+		var matchesAnyOf = indicesAnyOf == null ||  indicesAnyOf.length == 0 || entity.hasAnyComponent(indicesAnyOf);
+		var matchesNoneOf = indicesNoneOf == null || indicesNoneOf.length == 0 ||  !entity.hasAnyComponent(indicesNoneOf);
+		
 		return matchesAllOf && matchesAnyOf && matchesNoneOf;
-	}
-
-	public function hashCode():Int
-	{
-		return hashCode_;
 	}
 
 	public function allIndices()
 	{
-		return indicesAllOf_.concat(indicesAnyOf_).concat(indicesNoneOf_).distinct();
+		// TODO: Review this, looking at how Context uses this, probably doesn't work correctly
+		// at least for noneOf
+		return indicesAllOf.concat(indicesAnyOf).concat(indicesNoneOf).distinct();
+	}
+
+	public function equals(m: Matcher): Bool
+	{
+		return indicesAllOf.equals(m.indicesAllOf) &&
+			   indicesAnyOf.equals(m.indicesAnyOf) &&
+			   indicesNoneOf.equals(m.indicesNoneOf);
 	}
 }

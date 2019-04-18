@@ -24,7 +24,8 @@ class Group
 	public var onEntityAdded = new DelegateGroupChanged();
 	public var onEntityRemoved = new DelegateGroupChanged();
 
-	private var matcher_: Matcher;
+	public var matcher(default, null): Matcher;
+
 	private var entities_ =  Entities.create();
 	private var entitiesCache_: Array<Entity>;
 	private var entityCache_ : Entity;
@@ -35,14 +36,14 @@ class Group
 		entityCache_ = null;
 	}
 
-	public function new(matcher: Matcher)
+	public function new(_matcher: Matcher)
 	{
-		matcher_ = matcher;
+		matcher = _matcher;
 	}
 
 	public function handleEntitySilently(entity: Entity)
 	{
-		if (matcher_.matches(entity))
+		if (matcher.matches(entity))
 			addEntitySilently(entity);
 		else
 			removeEntitySilently(entity);
@@ -52,8 +53,8 @@ class Group
 	{
 		// if we are removing component from entity 
 		// then it (component) is already set to null
-		// thus matcher_ will fail
-		if (matcher_.matches(entity))
+		// thus matcher will fail
+		if (matcher.matches(entity))
 			return addEntity(entity);
 		else
 			return removeEntity(entity);
