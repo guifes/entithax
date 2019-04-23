@@ -169,7 +169,7 @@ class Context
 			for (e in getEntities()) {
 				group.handleEntitySilently(e);
 			}
-
+			
 			groups_.set(matcher, group);
 
 			var allIndices = matcher.allIndices();
@@ -213,12 +213,14 @@ class Context
 
 	public function updateGroupsComponentReplaced(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
 	{
-		// trace("NotImplemented");
 		var groups = groupsForIndex_[index];
 
 		for (g in groups)
 		{
-			g.updateEntity(entity, index, previousComponent, newComponent);
+			if(g.matcher.matches(entity))
+			{
+				g.updateEntity(entity, index, previousComponent, newComponent);
+			}
 		}
 	}
 

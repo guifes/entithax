@@ -163,7 +163,7 @@ class Matcher implements Hashable
 		}
 		key = hashAllOf + hashAnyOf + hashNoneOf;
 
-		trace("Hash code " + key + " generated for indices: " + indicesAllOf + ', ' + indicesAnyOf + ", " + indicesNoneOf);
+		// trace("Hash code " + key + " generated for indices: " + indicesAllOf + ', ' + indicesAnyOf + ", " + indicesNoneOf);
 	}
 
 	public function matches(entity: Entity): Bool
