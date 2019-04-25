@@ -11,13 +11,13 @@ class Collector
 	public var collectedEntities(default, null) = Entities.create();
 
 	private var group_ : Group;
-	private var groupEvent_: GroupEvent;
+	private var groupEventMask_: Int;
 	private var active_: Bool;
 	
-	public function new(group: Group, groupEvent: GroupEvent)
+	public function new(group: Group, groupEventMask: Int)
 	{
 		group_ = group;
-		groupEvent_ = groupEvent;
+		groupEventMask_ = groupEventMask;
 		active_ = true;
 
 		initialize();
@@ -34,16 +34,14 @@ class Collector
     /// changed entities. Collectors are activated by default.
 	public function initialize()
 	{
-		switch (groupEvent_)
-		{
-			case Added:  group_.onEntityAdded.addDelegate(0, collectEntity);
-			case Removed: group_.onEntityRemoved.addDelegate(0, collectEntity);
-			case AddedOrRemoved:
-			{
-				group_.onEntityAdded.addDelegate(0, collectEntity);
-				group_.onEntityRemoved.addDelegate(0, collectEntity);
-			} 
-		}
+		if(groupEventMask_ & GroupEvent.Added > 0)
+			group_.onEntityAdded.addDelegate(0, collectEntity);
+		
+		if(groupEventMask_ & GroupEvent.Removed > 0)
+			group_.onEntityRemoved.addDelegate(0, collectEntity);
+
+		if(groupEventMask_ & GroupEvent.Updated > 0)
+			group_.onEntityUpdated.addDelegate(0, collectEntity);
 	}
 
 	public function activate()

@@ -5,24 +5,22 @@ import entithax.Entity;
 import entithax.Matcher;
 import entithax.DelegateGroupChanged;
 
-//import haxe.ds.IntMap;
-// TODO abstract from Int?!
-// make this constant
-enum GroupEvent
+@:enum abstract GroupEvent(Int) from Int to Int
 {
-	Added;
-	Removed;
-	AddedOrRemoved;
+	var Added = 1;
+	var Removed = 2;
+	var Updated = 4;
 }
 
 typedef GroupChanged = Group -> Entity -> Int -> Component -> Void;
 
-//typedef GroupReplaced = Entity -> Int -> Component -> Component -> Void;
+// typedef GroupReplaced = Entity -> Int -> Component -> Component -> Void;
 
 class Group
 {
 	public var onEntityAdded = new DelegateGroupChanged();
 	public var onEntityRemoved = new DelegateGroupChanged();
+	public var onEntityUpdated = new DelegateGroupChanged();
 
 	public var matcher(default, null): Matcher;
 
@@ -124,17 +122,10 @@ class Group
 		return entityCache_;
 	}
 
-	// This handles entity replace/update 
+	// This handles entity replace/update
 	public function updateEntity(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
 	{
-		if (entities_.exists(entity))
-		{
-			if (onEntityRemoved != null)
-				onEntityRemoved.invoke(this, entity, index, previousComponent);
-
-			if (onEntityAdded != null)
-				onEntityAdded.invoke(this, entity, index, newComponent);
-			// TODO call onEntityUpdated
-		}
+		if (onEntityUpdated != null)
+			onEntityUpdated.invoke(this, entity, index, newComponent);
 	}
 }

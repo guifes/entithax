@@ -128,10 +128,10 @@ class Context
 		}
 	}
 
-	public function createCollector(matcher: Matcher, event: GroupEvent): Collector
+	public function createCollector(matcher: Matcher, eventMask: Int): Collector
 	{
 		var g = getGroup(matcher);
-		return new Collector(g, event);
+		return new Collector(g, eventMask);
 	}
 
 	// Returns a group for the specified matcher.
@@ -220,6 +220,10 @@ class Context
 			if(g.matcher.matches(entity))
 			{
 				g.updateEntity(entity, index, previousComponent, newComponent);
+			}
+			else
+			{
+				trace("HOLY SHIT");
 			}
 		}
 	}
