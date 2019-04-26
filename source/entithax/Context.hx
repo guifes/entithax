@@ -37,7 +37,6 @@ class Context
 	private var dbgUsePool_ = true;
 	private var groups_: HashTable<Matcher, Group>;
 	private var groupsForIndex_ = new Array<List<Group>>();
-	private var sharedSystems_ = new Map<String, ISystem>(); // Replace by macro ClassName > Index implementation
 	private var debug_: Bool = false;
 
 	public function new(debug: Bool = false)
@@ -250,15 +249,5 @@ class Context
 	{
 		var componentId = macro entithax.detail.Macro.getComponentId($object);
 		return macro $self.globalEntity.replaceComponent($componentId, $object);
-	}
-
-	public function addSharedSystem(key: String, system: ISystem)
-	{
-		sharedSystems_.set(key, system);
-	}
-
-	public function getSharedSystem(key: String): ISystem
-	{
-		return sharedSystems_.get(key);
 	}
 }
