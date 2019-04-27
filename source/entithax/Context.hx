@@ -220,10 +220,10 @@ class Context
 			{
 				g.updateEntity(entity, index, previousComponent, newComponent);
 			}
-			else
-			{
-				trace("HOLY SHIT");
-			}
+			// else
+			// {
+			// 	trace("Updated component " + index + "not matched by " + g.matcher.indicesAllOf);
+			// }
 		}
 	}
 
