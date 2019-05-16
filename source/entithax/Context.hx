@@ -140,22 +140,12 @@ class Context
 		var count = groups_.getAll(matcher, groups);
 		var group: Group = null;
 
-		if (count > 0)
+		for(g in groups)
 		{
-			if(count == 1)
+			if(g.matcher.equals(matcher))
 			{
-				group = groups[0];
-			}
-			else
-			{
-				for(g in groups)
-				{
-					if(g.matcher.equals(matcher))
-					{
-						group = g;
-						break;
-					}
-				}
+				group = g;
+				break;
 			}
 		}
 
