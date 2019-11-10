@@ -10,8 +10,8 @@ import entithax.*;
 import haxe.ds.GenericStack;
 import haxe.ds.HashMap;
 
-import de.polygonal.ds.tools.ObjectPool;
-import de.polygonal.ds.HashTable;
+import polygonal.ds.tools.ObjectPool;
+import polygonal.ds.HashTable;
 
 import thx.Tuple;
 

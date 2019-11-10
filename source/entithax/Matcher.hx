@@ -3,7 +3,7 @@ package entithax;
 import entithax.Component;
 import entithax.Entity;
 
-import de.polygonal.ds.Hashable;
+import polygonal.ds.Hashable;
 
 using thx.Arrays;
 
