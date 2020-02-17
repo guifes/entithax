@@ -1,29 +1,8 @@
-package entithax;
+package entithax.system;
 
-import entithax.Context;
-import entithax.Entity;
-import entithax.Collector;
 import haxe.ds.Vector;
 
-interface ISystem {}
-
-/// Implement this interface if you want to create a system which should be
-/// initialized once in the beginning.
-interface IInitializeSystem extends ISystem
-{
-	public function initialize(): Void;
-}
-
-/// Implement this interface if you want to create a system which should be
-/// executed every frame.
-interface IExecuteSystem extends ISystem
-{
-	public function execute(elapsed:Float): Void;
-}
-
-typedef ExecuteSystemInfo = { system: IExecuteSystem, enabled: Bool };
-
-class Systems implements IInitializeSystem implements IExecuteSystem
+class StaticSystems implements ISystems
 {
 	private var initializeSystems: Vector<IInitializeSystem>;
 	private var initializeSystemsCount: Int;
@@ -46,7 +25,7 @@ class Systems implements IInitializeSystem implements IExecuteSystem
 
 	public function execute(elapsed: Float)
 	{
-		for (i in 0...executeSystemsCount)
+		for(i in 0...executeSystemsCount)
 		{
 			var s = executeSystemsInfo[i];
 
@@ -57,9 +36,9 @@ class Systems implements IInitializeSystem implements IExecuteSystem
 		}
 	}
 
-	public function initialize() 
+	public function initialize()
 	{
-		for (i in 0...initializeSystemsCount)
+		for(i in 0...initializeSystemsCount)
 		{
 			var s = initializeSystems[i];
 			s.initialize();
@@ -78,15 +57,15 @@ class Systems implements IInitializeSystem implements IExecuteSystem
 
 	public function add(system: ISystem)
 	{
-		if (Std.is(system, IExecuteSystem))
+		if(Std.is(system, IExecuteSystem))
 		{
-			var bla: IExecuteSystem = cast system;
+			var eSystem: IExecuteSystem = cast system;
 
-			executeSystems[executeSystemsCount] = bla;
-			executeSystemsInfo[executeSystemsCount++] = { system: bla, enabled: true };
+			executeSystems[executeSystemsCount] = eSystem;
+			executeSystemsInfo[executeSystemsCount++] = {system: eSystem, enabled: true};
 		}
-			
-		if (Std.is(system, IInitializeSystem))
+
+		if(Std.is(system, IInitializeSystem))
 		{
 			initializeSystems[initializeSystemsCount++] = cast system;
 		}

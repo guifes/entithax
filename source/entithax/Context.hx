@@ -3,7 +3,6 @@ package entithax;
 import entithax.Component;
 import entithax.Entity;
 import entithax.Group;
-import entithax.Systems;
 import entithax.detail.Macro;
 import entithax.*;
 

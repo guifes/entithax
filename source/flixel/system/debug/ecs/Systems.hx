@@ -4,7 +4,8 @@ import flash.display.Sprite;
 import flixel.system.FlxAssets;
 import flixel.system.debug.Window;
 import flixel.system.ui.FlxCheckBox.GraphicCheckBoxCheckedButton;
-import entithax.Systems;
+import entithax.system.ISystems;
+import entithax.system.IExecuteSystem;
 
 class Systems extends Window
 {
@@ -12,7 +13,7 @@ class Systems extends Window
 	
 	var systemList: List<SystemRow>;
 
-    public function new(systems: entithax.Systems)
+    public function new(systems: entithax.system.ISystems)
 	{
 		var systemsArray: Array<IExecuteSystem> = systems.getExecuteSystems();
 
