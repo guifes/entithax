@@ -9,8 +9,13 @@ import entithax.*;
 import haxe.ds.GenericStack;
 import haxe.ds.HashMap;
 
+#if hl
+import temp.ObjectPool;
+import temp.HashTable;
+#else
 import polygonal.ds.tools.ObjectPool;
 import polygonal.ds.HashTable;
+#end
 
 import thx.Tuple;
 

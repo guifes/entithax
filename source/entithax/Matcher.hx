@@ -161,6 +161,7 @@ class Matcher implements Hashable
 			for(i in 0...indicesNoneOf.length)
 				hashNoneOf += indicesNoneOf[i] + (i * indexOffset);
 		}
+		
 		key = hashAllOf + hashAnyOf + hashNoneOf;
 
 		// trace("Hash code " + key + " generated for indices: " + indicesAllOf + ', ' + indicesAnyOf + ", " + indicesNoneOf);
