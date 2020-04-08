@@ -42,10 +42,13 @@ class Context
 	private var groups_: HashTable<Matcher, Group>;
 	private var groupsForIndex_ = new Array<List<Group>>();
 	private var debug_: Bool = false;
+	private var events: Map<String, Dynamic>;
 
 	public function new(debug: Bool = false)
 	{
 		this.debug_ = debug;
+
+		events = new Map<String, Dynamic>();
 
 		totalComponents_ = Macro.getComponentCount();
 
@@ -185,7 +188,47 @@ class Context
 		return entitiesCache_;
 	}
 
-	public function updateGroupsComponentAddedOrRemoved(entity: Entity, index: Int, component: Component)
+	public function subscribe<T>(name: String, listener: T -> Void = null)
+	{
+		if(events.exists(name))
+		{
+			var dispatcher: Dispatcher<T> = events.get(name);
+			dispatcher.add(name, listener);
+		}
+		else
+		{
+			var dispatcher: Dispatcher<T> = new Dispatcher<T>();
+			dispatcher.add(name, listener);
+			events.set(name, dispatcher);
+		}
+	}
+
+	public function unsubscribe<T>(name: String, listener: T -> Void = null)
+	{
+		if(events.exists(name))
+		{
+			var dispatcher: Dispatcher<T> = events.get(name);
+			dispatcher.add(name, listener);
+		}
+		else
+		{
+			var dispatcher: Dispatcher<T> = new Dispatcher<T>();
+			dispatcher.add(name, listener);
+			events.set(name, dispatcher);
+		}
+	}
+
+	public function post<T>(name: String, params: T = null)
+	{
+		if(events.exists(name))
+		{
+			var dispatcher = events.get(name);
+			
+			cast(dispatcher, Dispatcher<Dynamic>).dispatch(name, params);
+		}
+	}
+
+	private function updateGroupsComponentAddedOrRemoved(entity: Entity, index: Int, component: Component)
 	{
 		var groups = groupsForIndex_[index];
 		var callbacks = new List<Tuple2<Group, DelegateGroupChanged>>();
@@ -204,7 +247,7 @@ class Context
 		}
 	}
 
-	public function updateGroupsComponentReplaced(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
+	private function updateGroupsComponentReplaced(entity: Entity, index: Int, previousComponent: Component, newComponent: Component)
 	{
 		var groups = groupsForIndex_[index];
 
