@@ -1,17 +1,17 @@
-package entithax;
+package entithax.events;
 
 class Dispatcher<T>
 {
-    var listeners: Map<String, Array<T -> Void>>;
+    var listeners: Map<String, Array<HandlerOrVoid<T>>>;
     
     public function new()
     {
-        listeners = new Map<String, Array<T -> Void>>();
+        listeners = new Map<String, Array<HandlerOrVoid<T>>>();
     }
     
-    public function add(name: String, listener: T -> Void)
+    public function add(name: String, listener: HandlerOrVoid<T>)
     {
-        var list: Array<T -> Void> = null;
+        var list: Array<HandlerOrVoid<T>> = null;
 
         if(listeners.exists(name))
         {
@@ -30,7 +30,7 @@ class Dispatcher<T>
     {
         if(listeners.exists(name))
         {
-            var list: Array<T -> Void> = listeners.get(name);
+            var list: Array<HandlerOrVoid<T>> = listeners.get(name);
 
             for(i in 0...list.length)
             {

@@ -4,7 +4,8 @@ import entithax.Component;
 import entithax.Entity;
 import entithax.Group;
 import entithax.detail.Macro;
-import entithax.*;
+import entithax.events.Dispatcher;
+import entithax.events.HandlerOrVoid;
 
 import haxe.ds.GenericStack;
 import haxe.ds.HashMap;
@@ -188,7 +189,7 @@ class Context
 		return entitiesCache_;
 	}
 
-	public function subscribe<T>(name: String, listener: T -> Void = null)
+	public function subscribe<T>(name: String, listener: HandlerOrVoid<T> = null)
 	{
 		if(events.exists(name))
 		{
@@ -203,7 +204,7 @@ class Context
 		}
 	}
 
-	public function unsubscribe<T>(name: String, listener: T -> Void = null)
+	public function unsubscribe<T>(name: String, listener: HandlerOrVoid<T> = null)
 	{
 		if(events.exists(name))
 		{
