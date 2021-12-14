@@ -1,12 +1,11 @@
 package entithax.detail;
 
+import entithax.Component;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-import haxe.macro.Type;
-import haxe.macro.Tools;
 import haxe.macro.ExprTools;
-
-import entithax.Component;
+import haxe.macro.Tools;
+import haxe.macro.Type;
 
 class Macro
 {

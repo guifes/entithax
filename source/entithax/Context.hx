@@ -6,19 +6,17 @@ import entithax.Group;
 import entithax.detail.Macro;
 import entithax.events.Dispatcher;
 import entithax.events.HandlerOrVoid;
-
 import haxe.ds.GenericStack;
 import haxe.ds.HashMap;
-
+import thx.Tuple;
 #if hl
-import temp.ObjectPool;
 import temp.HashTable;
+import temp.ObjectPool;
 #else
-import polygonal.ds.tools.ObjectPool;
 import polygonal.ds.HashTable;
+import polygonal.ds.tools.ObjectPool;
 #end
 
-import thx.Tuple;
 
 #if macro
 import haxe.macro.Expr;
@@ -51,7 +49,7 @@ class Context
 
 		events = new Map<String, Dynamic>();
 
-		totalComponents_ = Macro.getComponentCount();
+		totalComponents_ = 17;
 
 		var hashCapacity: Int = nextPowerOf2(totalComponents_ * 2);
 
