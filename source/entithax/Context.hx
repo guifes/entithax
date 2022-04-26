@@ -29,8 +29,6 @@ typedef ComponentPools = Array<ComponentPool>;
 
 class Context
 {
-	public var globalEntity(default, null): Entity;
-
 	private var creationIndex_: Int = 0;
 	private var totalComponents_: Int;
 	private var componentPools_ = new ComponentPools();
@@ -64,8 +62,6 @@ class Context
 		}
 
 		entitiesPool_ = new ObjectPool(createEntityNew);
-
-		globalEntity = createEntity("Global");
 	}
 
 	private static function nextPowerOf2(number: Int): Int
@@ -261,29 +257,5 @@ class Context
 			// 	trace("Updated component " + index + "not matched by " + g.matcher.indicesAllOf);
 			// }
 		}
-	}
-
-	macro public function add(self:Expr, object:ExprOf<Component>): Expr
-	{
-		var componentId = macro entithax.detail.Macro.getComponentId($object);
-		return macro $self.globalEntity.addComponent($componentId, $object);
-	}
-
-	macro public function get<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
-	{
-		var componentId = macro $componentClass.id_;
-		return macro cast $self.globalEntity.getComponent($componentClass.id_);
-	}
-
-	macro public function remove<A:Component> (self: Expr, componentClass: ExprOf<Class<A>>): ExprOf<A>
-	{
-		var componentId = macro $componentClass.id_;
-		return macro cast $self.globalEntity.replaceComponent($componentClass.id_, null);
-	}
-
-	macro public function replace(self: Expr, object: ExprOf<Component>): Expr
-	{
-		var componentId = macro entithax.detail.Macro.getComponentId($object);
-		return macro $self.globalEntity.replaceComponent($componentId, $object);
 	}
 }
