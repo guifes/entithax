@@ -9,8 +9,8 @@
 	"contributors": ["montonero", "MouseCaneta"],
 	"classPath": "source",
 	"dependencies": {
-		"polygonal-ds" : "",
-		"hxmath": "",
-		"thx.core": ""
+		"polygonal-ds" : "2.1.1",
+		"hxmath": "0.18.0",
+		"thx.core": "0.44.0"
 	}
 }
