@@ -5,7 +5,7 @@ import entithax.Entity;
 import entithax.Matcher;
 import entithax.DelegateGroupChanged;
 
-@:enum abstract GroupEvent(Int) from Int to Int
+enum abstract GroupEvent(Int) from Int to Int
 {
 	var Added = 1;
 	var Removed = 2;
